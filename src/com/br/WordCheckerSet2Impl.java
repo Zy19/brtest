@@ -2,19 +2,18 @@ package com.br;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Deprecated
-public class WordCheckerSetImpl implements WordChecker {
+public class WordCheckerSet2Impl implements WordChecker {
 
     private final String masterWord;
     private final Map<Integer, Integer> mapMaster;
     private int charMin;
     private int charMax;
 
-    public WordCheckerSetImpl(final String masterWordParm) {
+    public WordCheckerSet2Impl(final String masterWordParm) {
         this.masterWord = masterWordParm.toLowerCase().trim();
 
         charMin = masterWord.charAt(0);
@@ -70,16 +69,17 @@ public class WordCheckerSetImpl implements WordChecker {
 
         String word = wordParm.toLowerCase().trim();
 
-        HashMap<Integer, AtomicInteger> wordMap = (HashMap<Integer, AtomicInteger>) mapMaster.entrySet().stream()
-                .collect(Collectors.toMap(k -> k.getKey(), k -> new AtomicInteger(k.getValue().intValue())));
+        HashMap<Integer, Integer> wordMap = (HashMap<Integer, Integer>) mapMaster.entrySet().stream()
+                .collect(Collectors.toMap(k -> k.getKey(), k -> new Integer(k.getValue().intValue())));
 
         for(int i = 0; i < word.length(); i++){
-            AtomicInteger counter = wordMap.get((int) word.charAt(i));
+            Integer counter = wordMap.get((int) word.charAt(i));
             if(counter == null || counter.intValue() == 0){
                 return false;
             }
 
-            counter.decrementAndGet();
+            counter--;
+            wordMap.put((int)word.charAt(i), counter);
         }
 
         return true;

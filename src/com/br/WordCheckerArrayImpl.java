@@ -7,31 +7,16 @@ public class WordCheckerArrayImpl implements WordChecker {
     private int charMin;
     private int charMax;
 
-    public WordCheckerArrayImpl(String masterWordParm) {
+    public WordCheckerArrayImpl(String masterWordParm, final int charMin, int charMax) {
         this.masterWord = masterWordParm.toLowerCase().trim();
 
-        if(masterWord.length() == 0){
-            return;
-        }
-
-        charMin = masterWord.charAt(0);
-        charMax = masterWord.charAt(0);
-        int size = masterWord.length();
-
-        for(int i = 1; i < size; i++){
-            int current = masterWord.charAt(i);
-
-            if(charMin > current){
-                charMin = current;
-            } else if(charMax < current){
-                charMax = current;
-            }
-        }
+        this.charMin = charMin;
+        this.charMax = charMax;
 
         int arraySize = charMax - charMin + 1;
         chars = new int[arraySize];
 
-        for(int i = 0; i < size; i++){
+        for(int i = 0; i < masterWord.length(); i++){
             int current = masterWord.charAt(i) - charMin;
             chars[current] = chars[current] + 1;
         }

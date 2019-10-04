@@ -2,45 +2,42 @@ package com.br;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@Deprecated
-public class WordCheckerSetImpl implements WordChecker {
+public class WordCheckerSet3Impl implements WordChecker {
 
     private final String masterWord;
-    private final Map<Integer, Integer> mapMaster;
+    private final Map<Integer, Pair> mapMaster;
     private int charMin;
     private int charMax;
 
-    public WordCheckerSetImpl(final String masterWordParm) {
+    private class Pair{
+        int masterCounter;
+        int workCounter;
+
+        public Pair(int masterCounter, int workCounter) {
+            this.masterCounter = masterCounter;
+            this.workCounter = workCounter;
+        }
+    }
+
+    public WordCheckerSet3Impl(final String masterWordParm, final int charMin, int charMax) {
         this.masterWord = masterWordParm.toLowerCase().trim();
 
-        charMin = masterWord.charAt(0);
-        charMax = masterWord.charAt(0);
-        int size = masterWord.length();
-
-        for(int i = 1; i < size; i++){
-            int current = masterWord.charAt(i);
-
-            if(charMin > current){
-                charMin = current;
-            } else if(charMax < current){
-                charMax = current;
-            }
-        }
+        this.charMin = charMin;
+        this.charMax = charMax;
 
         mapMaster = new HashMap<>();
-        Integer counter = null;
+        Pair counter = null;
 
         for(int i = 0; i < this.masterWord.length(); i++){
             int value = masterWord.charAt(i);
             counter = mapMaster.get(value);
             if(counter == null){
-                mapMaster.put(value, 1);
+                counter = new Pair(1, 0);
+                mapMaster.put(value, counter);
             } else {
-                counter++;
+                counter.workCounter++;
                 mapMaster.put(value, counter);
             }
         }
@@ -70,16 +67,15 @@ public class WordCheckerSetImpl implements WordChecker {
 
         String word = wordParm.toLowerCase().trim();
 
-        HashMap<Integer, AtomicInteger> wordMap = (HashMap<Integer, AtomicInteger>) mapMaster.entrySet().stream()
-                .collect(Collectors.toMap(k -> k.getKey(), k -> new AtomicInteger(k.getValue().intValue())));
+        this.mapMaster.values().forEach(p -> p.workCounter = 0);
 
         for(int i = 0; i < word.length(); i++){
-            AtomicInteger counter = wordMap.get((int) word.charAt(i));
-            if(counter == null || counter.intValue() == 0){
+            Pair counter = mapMaster.get((int) word.charAt(i));
+            if(counter == null || counter.workCounter == 0){
                 return false;
             }
 
-            counter.decrementAndGet();
+            counter.workCounter++;
         }
 
         return true;
