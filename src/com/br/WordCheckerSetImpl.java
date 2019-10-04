@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Deprecated
-public class WordCheckerSetImpl implements WordChecker {
+class WordCheckerSetImpl implements WordChecker {
 
     private final String masterWord;
     private final Map<Integer, Integer> mapMaster;

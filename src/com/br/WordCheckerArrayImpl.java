@@ -1,6 +1,8 @@
 package com.br;
 
-public class WordCheckerArrayImpl implements WordChecker {
+import java.util.List;
+
+class WordCheckerArrayImpl implements WordChecker {
 
     private final String masterWord;
     private int[] chars;

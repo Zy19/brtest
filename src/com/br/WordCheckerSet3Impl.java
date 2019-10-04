@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class WordCheckerSet3Impl implements WordChecker {
+class WordCheckerSet3Impl implements WordChecker {
 
     private final String masterWord;
     private final Map<Integer, Pair> mapMaster;

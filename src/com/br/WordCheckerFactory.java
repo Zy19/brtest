@@ -1,6 +1,6 @@
 package com.br;
 
-public class WordCheckerFactory {
+class WordCheckerFactory {
 
     private static final int MAX_DIFFERENCE = 2000;
 
