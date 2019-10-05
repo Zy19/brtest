@@ -1,30 +1,28 @@
 package com.br;
 
-import java.util.List;
-
-/**
- * Use WordCheckerArray2Impl instead
- */
-@Deprecated
-class WordCheckerArrayImpl implements WordChecker {
+class WordCheckerArray2Impl implements WordChecker {
 
     private final String masterWord;
-    private int[] chars;
+    private WordCheckerPair[] chars;
     private int charMin;
     private int charMax;
 
-    public WordCheckerArrayImpl(String masterWordParm, final int charMin, int charMax) {
+    public WordCheckerArray2Impl(String masterWordParm, final int charMin, int charMax) {
         this.masterWord = masterWordParm.toLowerCase().trim();
 
         this.charMin = charMin;
         this.charMax = charMax;
 
         int arraySize = charMax - charMin + 1;
-        chars = new int[arraySize];
+        chars = new WordCheckerPair[arraySize];
 
-        for(int i = 0; i < masterWord.length(); i++){
+        for(int i = 0; i < arraySize; i++){
+            chars[i] = new WordCheckerPair(0, 0);
+        }
+
+        for (int i = 0; i < masterWord.length(); i++) {
             int current = masterWord.charAt(i) - charMin;
-            chars[current] = chars[current] + 1;
+            chars[current].masterCounter++;
         }
     }
 
@@ -34,13 +32,13 @@ class WordCheckerArrayImpl implements WordChecker {
         String word = wordParm.toLowerCase().trim();
         int size = word.length();
 
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             int current = word.charAt(i);
-            if(current < charMin || current > charMax){
+            if (current < charMin || current > charMax) {
                 return true;
             }
 
-            if(chars[current - charMin] == 0){
+            if (chars[current - charMin].masterCounter == 0) {
                 return true;
             }
         }
@@ -52,16 +50,19 @@ class WordCheckerArrayImpl implements WordChecker {
     public boolean hasExactCharacters(final String wordParm) {
         String word = wordParm.toLowerCase().trim();
 
-        int[] masterArray = new int[chars.length];
-        System.arraycopy(chars, 0, masterArray, 0, chars.length);
+        for (WordCheckerPair p : chars) {
+            if (p.workCounter != p.masterCounter) {
+                p.workCounter = p.masterCounter;
+            }
+        }
 
-        for(int i = 0; i < word.length(); i++){
+        for (int i = 0; i < word.length(); i++) {
             int current = word.charAt(i) - charMin;
 
-            if(masterArray[current] == 0) {
+            if (chars[current].workCounter == 0) {
                 return false;
             }
-            masterArray[current] = masterArray[current] - 1;
+            chars[current].workCounter--;
         }
 
         return true;

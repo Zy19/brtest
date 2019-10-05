@@ -2,7 +2,7 @@ package com.br;
 
 class WordCheckerFactory {
 
-    private static final int MAX_DIFFERENCE = 2000;
+    private static final int MAX_DIFFERENCE = 1300;
 
     public static WordChecker createChecker(final String masterWordParm){
 
@@ -25,6 +25,6 @@ class WordCheckerFactory {
             return new WordCheckerSet3Impl(masterWord, charMin, charMax);
         }
 
-        return new WordCheckerArrayImpl(masterWord, charMin, charMax);
+        return new WordCheckerArray2Impl(masterWord, charMin, charMax);
     }
 }

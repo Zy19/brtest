@@ -1,123 +1,120 @@
 package com.br;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WordGenerator {
 
     private static int LIST_THRESHOLD = 50000;
 
-    private final String masterWord;
-    private final String fileName;
-    private final WordChecker wordChecker;
-    private List<String> wordList;
-    private int coresInUse;
-
-    public WordGenerator(final String masterWord, final String fileName, final int cores, final int percantageOfCoresInUse) {
-        this.masterWord = masterWord;
-        this.fileName = fileName;
-
-        int allCores = Runtime.getRuntime().availableProcessors();
-
-        if (cores > 0) {
-            coresInUse = cores;
-        } else if (percantageOfCoresInUse > 0) {
-            coresInUse = Runtime.getRuntime().availableProcessors() * percantageOfCoresInUse / 100;
-        }
-
-        if (coresInUse > allCores) {
-            coresInUse = allCores;
-        } else if (coresInUse < 1) {
-            coresInUse = 1;
-        }
-
-        wordChecker = WordCheckerFactory.createChecker(masterWord);
+    public List<String> execute(final String masterWord, final String fileName) {
+        return execute(masterWord, fileName, null, null, false, 0, 0);
     }
 
-    /**
-     * Test constructor is used for test performance
-     *
-     * @param masterWord
-     * @param list       - wordList of words
-     */
-    public WordGenerator(final String masterWord, final List<String> list) {
-        this.masterWord = masterWord;
-        this.fileName = null;
-        this.wordList = list;
-
-        wordChecker = WordCheckerFactory.createChecker(masterWord);
+    public List<String> execute(final String masterWord, final List<String> list) {
+        return execute(masterWord, null, list, null, false, 0, 0);
     }
 
-    public void execute() {
+    public List<String> execute(final String masterWord, final Stream<String> stream) {
+        return execute(masterWord, null, null, stream, false, 0, 0);
+    }
 
-        if (coresInUse == 1) {
+    public List<String> executeUsingAllCores(final String masterWord, final List<String> list) {
+        return execute(masterWord, null, list, null, true, 0, 0);
+    }
 
-            try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-                stream.forEach(currentWord -> this.wordChecker.checkWord(currentWord));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public List<String> executeUsingAllCores(final String masterWord, final Stream<String> stream) {
+        return execute(masterWord, null, null, stream, true, 0, 0);
+    }
+
+    public List<String> executeUsingCores(final String masterWord, final List<String> list, final int maxCoresInUse) {
+        return execute(masterWord, null, list, null, false, maxCoresInUse, 0);
+    }
+
+    public List<String> executeUsingCores(final String masterWord, final Stream<String> stream, final int maxCoresInUse) {
+        return execute(masterWord, null, null, stream, true, maxCoresInUse, 0);
+    }
+
+    public List<String> executeUsingCoresInPercents(final String masterWord, final List<String> list, final int maxCoresInUsePercents) {
+        return execute(masterWord, null, list, null, false, 0, maxCoresInUsePercents);
+    }
+
+    public List<String> executeUsingCoresInPercents(final String masterWord, final Stream<String> stream, final int maxCoresInUsePercents) {
+        return execute(masterWord, null, null, stream, true, 0, maxCoresInUsePercents);
+    }
+
+    private List<String> execute(final String masterWord, final String fileName, final List<String> list,
+                                 final Stream<String> stream, final boolean useAllCores, final int maxCoresInUse,
+                                 final int maxCoresInUsePercents) {
+
+        final WordGeneratorStreamer streamer;
+
+        if (fileName != null) {
+            streamer = new WordGeneratorStreamer(fileName);
+        } else if (list != null) {
+            streamer = new WordGeneratorStreamer(list);
         } else {
-            try {
-                executeMCore();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            streamer = new WordGeneratorStreamer(stream);
+        }
+
+        WordChecker wordChecker = WordCheckerFactory.createChecker(masterWord);
+
+        int coresInUse = 0;
+        if (useAllCores) {
+            coresInUse = Runtime.getRuntime().availableProcessors();
+        } else if (maxCoresInUse > 0) {
+            int cores = Runtime.getRuntime().availableProcessors();
+            if (cores <= maxCoresInUse) {
+                coresInUse = maxCoresInUse;
+            } else {
+                coresInUse = cores;
+            }
+        } else if (maxCoresInUsePercents > 0) {
+            int maxCores = Runtime.getRuntime().availableProcessors();
+            int cores = maxCores * 100 / maxCoresInUsePercents;
+            if (cores < 1) {
+                coresInUse = 1;
+            } else if (cores > maxCores) {
+                coresInUse = maxCores;
+            } else {
+                coresInUse = cores;
             }
         }
-    }
 
-    private void executeMCore() throws InterruptedException {
+        try {
+            if (coresInUse <= 1) {
+                return executeInSingleThread(streamer, wordChecker);
+            }
 
-        AtomicInteger taskRun = new AtomicInteger(0);
-        List<String> listCurrent = new LinkedList<>();
-
-        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-            stream.forEach(currentWord -> {
-
-                while(taskRun.intValue() >= coresInUse + 1){
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                listCurrent.add(currentWord);
-
-                if(LIST_THRESHOLD == listCurrent.size()){
-                    taskRun.incrementAndGet();
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            wordChecker.checkWords(listCurrent, taskRun);
-                        }
-                    };
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+            return executeMCore(streamer, wordChecker, coresInUse);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * For testing only
-     * @param wordCheckerParm
-     */
-    public void testPerformance(WordChecker wordCheckerParm) {
+    private List<String> executeInSingleThread(final WordGeneratorStreamer streamer, final WordChecker wordChecker) throws IOException {
+        Set<String> resultSet = new HashSet<>();
 
-        coresInUse = 8;
+        Stream<String> stream = streamer.getStream();
+        stream.forEach(currentWord -> resultSet.add(wordChecker.checkWord(currentWord)));
+
+        return convertResult(resultSet);
+    }
+
+    private List<String> executeMCore(final WordGeneratorStreamer streamer, final WordChecker wordChecker, final int coresInUse) throws InterruptedException, IOException {
+
         AtomicInteger taskRun = new AtomicInteger(0);
         List<String> list = new LinkedList<>();
         AtomicInteger delay = new AtomicInteger(10);
+        Set<String> resultSet = new HashSet<>();
 
-        wordList.forEach(l -> {
-            while(taskRun.intValue() >= coresInUse + 1){
+        Stream<String> stream = streamer.getStream();
+        stream.forEach(currentWord -> {
+
+            while (taskRun.intValue() >= coresInUse + 1) {
                 try {
                     Thread.sleep(0, 10);
                     delay.addAndGet(10);
@@ -126,20 +123,20 @@ public class WordGenerator {
                 }
             }
 
-            if(delay.intValue() > 10){
+            if (delay.intValue() > 10) {
                 System.out.println();
             }
 
-            list.add(l);
+            list.add(currentWord);
 
-            if(LIST_THRESHOLD == list.size()) {
+            if (LIST_THRESHOLD == list.size()) {
                 taskRun.incrementAndGet();
                 List<String> currentWords = new ArrayList<>(list);
                 list.clear();
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        wordChecker.checkWords(currentWords, taskRun);
+                        resultSet.addAll(wordChecker.checkWords(currentWords, taskRun));
                     }
                 };
 
@@ -147,31 +144,30 @@ public class WordGenerator {
                 (new Thread(runnable)).start();
             }
         });
+
+        if(list.size() > 0){
+            resultSet.addAll(wordChecker.checkWords(list, taskRun));
+        }
+
+        return convertResult(resultSet);
     }
 
-//    private void checkAndGenerate(final String currentWord) {
-//        if (wordChecker.hasExtraCharacters(currentWord)) {
-//            return;
-//        }
-//
-//        if (!wordChecker.hasExactCharacters(currentWord)) {
-//            return;
-//        }
-//
-//        System.out.println(currentWord);
-//    }
+    private List<String> convertResult(final Set<String> set) {
 
-    public static void main(String[] args) {
-        // 象形字
-        // éviter
-        // 汉语大字典
-        WordGenerator wordGenerator = new WordGenerator("Abalienationnn", "/usr/share/dict/words", 8, 0);
- //       WordGenerator wordGenerator = new WordGenerator("Abalienationnn", "/usr/share/dict/words", 0, 0);
+        if (set.size() == 0) {
+            return null;
+        }
 
-        long time = System.currentTimeMillis();
+        List<String> list = new ArrayList<>(set);
 
-        wordGenerator.execute();
+        if (list.size() == 1) {
+            if (list.get(0) == null) {
+                return null;
+            }
+        }
 
-        System.out.println("Done: " + (System.currentTimeMillis() - time));
+        List<String> result = list.stream().filter(v -> v != null).collect(Collectors.toList());
+
+        return result;
     }
 }

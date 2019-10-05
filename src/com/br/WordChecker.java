@@ -1,8 +1,6 @@
 package com.br;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 interface WordChecker {
@@ -11,18 +9,23 @@ interface WordChecker {
 
     boolean hasExactCharacters(final String word);
 
-    default void checkWord(String currentWord) {
+    default String checkWord(String currentWord) {
         if(hasExtraCharacters(currentWord)){
-            return;
+            return null;
         }
 
         if(hasExactCharacters(currentWord)){
-            //System.out.println(currentWord);
+            return currentWord;
         }
+
+        return null;
     }
 
-    default void checkWords(List<String> currentWords, final AtomicInteger taskRun) {
-        currentWords.forEach(word -> checkWord(word));
+    default Set<String> checkWords(List<String> currentWords, final AtomicInteger taskRun) {
+        Set<String> set = new HashSet<>();
+        currentWords.forEach(word -> set.add(checkWord(word)));
         taskRun.decrementAndGet();
+
+        return set;
     }
 }
