@@ -1,5 +1,10 @@
 package com.br;
 
+/**
+ * Create and return WordChecker based on master word.
+ * If difference between characters in master word is less then 1300 Array Implementattion is used.
+ * If more Set Implementation is used
+ */
 class WordCheckerFactory {
 
     private static final int MAX_DIFFERENCE = 1300;

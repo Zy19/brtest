@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Map based implementstion of WordChecker
+ */
 class WordCheckerSet3Impl implements WordChecker {
 
     private final String masterWord;

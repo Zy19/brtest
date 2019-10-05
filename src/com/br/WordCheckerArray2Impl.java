@@ -1,5 +1,8 @@
 package com.br;
 
+/**
+ * Array based implementstion of WordChecker
+ */
 class WordCheckerArray2Impl implements WordChecker {
 
     private final String masterWord;

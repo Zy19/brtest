@@ -111,6 +111,61 @@ public class WordGeneratorTest {
         }
     }
 
+
+    public static void testPerformanceBaseMc(String ch) throws Exception {
+        String fileName = "/usr/share/dict/words";
+        final List<String> lines = new ArrayList<>();
+
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+            stream.forEach(currentWord -> {
+
+                if (ch == null) {
+                    lines.add(currentWord);
+                } else {
+                    lines.add(currentWord + ch);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String wordMaster = "Abalienationnn";
+
+        if (ch != null) {
+            wordMaster += ch;
+        }
+
+        WordGenerator wordGenerator = new WordGenerator();
+
+        String masterWord = wordMaster.toLowerCase().trim();
+        int charMin = masterWord.charAt(0);
+        int charMax = masterWord.charAt(0);
+        int size = masterWord.length();
+
+        for (int i = 1; i < size; i++) {
+            int current = masterWord.charAt(i);
+
+            if (charMin > current) {
+                charMin = current;
+            } else if (charMax < current) {
+                charMax = current;
+            }
+        }
+
+        WordChecker[] checkers = {new WordCheckerArray2Impl(wordMaster, charMin, charMax), new WordCheckerArrayImpl(wordMaster, charMin, charMax), new WordCheckerSet3Impl(wordMaster, charMin, charMax),
+        };
+
+        WordGeneratorStreamer streamer = new WordGeneratorStreamer(lines);
+
+        for (WordChecker checker : checkers) {
+            long time = System.currentTimeMillis();
+            for (int i = 0; i < 5000; i++) {
+                //List<String> l = wordGenerator.executeMCore(streamer, checker, 8);
+            }
+            System.out.println("Done: " + (System.currentTimeMillis() - time) + ", " + checker.getClass().getName());
+        }
+    }
+
     private static void test1() {
 
         List<String> lines = Arrays.asList(SET1);
@@ -198,6 +253,30 @@ public class WordGeneratorTest {
         assert lines.size() - 1 == result.size() : "test3Mt did not pass";
     }
 
+
+    private static void test4Mt() {
+
+        String fileName = "/usr/share/dict/words";
+        final List<String> lines = new ArrayList<>();
+
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+            stream.forEach(currentWord -> lines.add(currentWord));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String wordMaster = "Abalienationnn";
+        WordGenerator wordGenerator = new WordGenerator();
+        List<String> result = null;
+        for(int i = 0; i < 1000; i++) {
+            result = wordGenerator.executeUsingAllCores(wordMaster, lines);
+        }
+
+        List<WordCheckerStatHelper> stat = wordGenerator.getAttempts();
+
+        stat.forEach(s -> System.out.println(s));
+    }
+
     public static void main(String[] args) throws Exception {
         /**
          * Just performance testing, works only if you change wordGenerator.executeInSingleThread to public
@@ -209,6 +288,7 @@ public class WordGeneratorTest {
 //        testPerformanceForCheckerLongArray4();
 //        testPerformanceForCheckerLongArray5();
 //        testPerformanceForCheckerLongArray6();
+//        testPerformanceBaseMc(null);
 
         test1();
         testLong();
@@ -217,6 +297,8 @@ public class WordGeneratorTest {
         test1Mt();
         test2Mt();
         test3Mt();
+
+        test4Mt();// stat demo
     }
 
 }

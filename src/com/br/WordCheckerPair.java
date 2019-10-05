@@ -1,6 +1,9 @@
 package com.br;
 
-public class WordCheckerPair {
+/**
+ * Helper class
+ */
+class WordCheckerPair {
     int masterCounter;
     int workCounter;
 
