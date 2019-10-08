@@ -3,7 +3,7 @@ package com.br;
 import java.util.List;
 
 /**
- * Use WordCheckerArray2Impl instead
+ * Use {@link com.br.WordCheckerArray2Impl} instead
  */
 @Deprecated
 class WordCheckerArrayImpl implements WordChecker {

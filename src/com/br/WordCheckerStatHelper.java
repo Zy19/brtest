@@ -7,11 +7,12 @@ package com.br;
 class WordCheckerStatHelper {
 
     private int attempt;
-    private volatile long elapsedTime;
+    private long elapsedTime;
     private int chunk;
     private int delay;
     private int increaseSize;
     private int maxCoreInUse;
+    private long elapsedTimePerWord;
 
     @Override
     public String toString() {
@@ -24,6 +25,10 @@ class WordCheckerStatHelper {
 
         builder.append("elapsedTime: ");
         builder.append(elapsedTime);
+        builder.append("; ");
+
+        builder.append("elapsedTimePerWord: ");
+        builder.append(elapsedTimePerWord);
         builder.append("; ");
 
         builder.append("chunk: ");
@@ -93,4 +98,11 @@ class WordCheckerStatHelper {
         this.maxCoreInUse = maxCoreInUse;
     }
 
+    public long getElapsedTimePerWord() {
+        return elapsedTimePerWord;
+    }
+
+    public void setElapsedTimePerWord(long elapsedTimePerWord) {
+        this.elapsedTimePerWord = elapsedTimePerWord;
+    }
 }

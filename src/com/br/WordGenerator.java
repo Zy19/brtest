@@ -1,12 +1,14 @@
 package com.br;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Class gets master word as a parameter, reads words from standard input/file/list/stream and finds words which can be constructed from master word
+ */
 public class WordGenerator {
 
     private static int LIST_THRESHOLD = 1000;
@@ -19,9 +21,9 @@ public class WordGenerator {
     /**
      * Find scramdled words in a file
      *
-     * @param masterWord
-     * @param fileName
-     * @return
+     * @param masterWord master word
+     * @param fileName   word file, words should be separated by CR
+     * @return list of unique words which can be constructed from master word
      */
     public List<String> execute(final String masterWord, final String fileName) {
         return execute(masterWord, fileName, null, null, false, 0, 0);
@@ -30,9 +32,9 @@ public class WordGenerator {
     /**
      * Find scramdled words in a list of strings
      *
-     * @param masterWord
-     * @param list
-     * @return
+     * @param masterWord master word
+     * @param list       list of words
+     * @return list of unique words which can be constructed from master word
      */
     public List<String> execute(final String masterWord, final List<String> list) {
         return execute(masterWord, null, list, null, false, 0, 0);
@@ -41,20 +43,21 @@ public class WordGenerator {
     /**
      * Find scramdled words in a stream of strings
      *
-     * @param masterWord
-     * @param stream
-     * @return
+     * @param masterWord master word
+     * @param stream     String stream of words
+     * @return list of unique words which can be constructed from master word
      */
     public List<String> execute(final String masterWord, final Stream<String> stream) {
         return execute(masterWord, null, null, stream, false, 0, 0);
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode, tries to use all processor cores. In reality not all cores can be used for the best performance.
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param list
-     * @return
+     * @param masterWord master word
+     * @param list       list of words
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingAllCores(final String masterWord, final List<String> list) {
@@ -62,11 +65,12 @@ public class WordGenerator {
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode, tries to use all processor cores. In reality not all cores can be used for the best performance.
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param stream
-     * @return
+     * @param masterWord master word
+     * @param stream     String stream of words
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingAllCores(final String masterWord, final Stream<String> stream) {
@@ -74,12 +78,13 @@ public class WordGenerator {
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode.
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param list
-     * @param maxCoresInUse
-     * @return
+     * @param masterWord    master word
+     * @param list          list of words
+     * @param maxCoresInUse how many cores should be used. If maxCoresInUse is less than 1, 1 core will be used, if maxCoresInUse is more than max cores, all cores will be used
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingCores(final String masterWord, final List<String> list, final int maxCoresInUse) {
@@ -87,12 +92,13 @@ public class WordGenerator {
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode.
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param stream
-     * @param maxCoresInUse
-     * @return
+     * @param masterWord    master word
+     * @param stream        String stream of words
+     * @param maxCoresInUse how many cores should be used. If maxCoresInUse is less than 1, 1 core will be used, if maxCoresInUse is more than max cores, all cores will be used
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingCores(final String masterWord, final Stream<String> stream, final int maxCoresInUse) {
@@ -100,12 +106,13 @@ public class WordGenerator {
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode.
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param list
-     * @param maxCoresInUsePercents
-     * @return
+     * @param masterWord            master word
+     * @param list                  list of words
+     * @param maxCoresInUsePercents Percentage of all cores should be used. If counted core amount is less than 1, 1 core will be used, if counted core amount is more than max cores, all cores will be used
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingCoresInPercents(final String masterWord, final List<String> list, final int maxCoresInUsePercents) {
@@ -113,12 +120,13 @@ public class WordGenerator {
     }
 
     /**
-     * Using multithreading does not make sence, because it's very depended of data etc.
+     * Multithreading mode
+     * Deprecated, because using multicore mode has unpredictable performace and computer is overloaded
      *
-     * @param masterWord
-     * @param stream
-     * @param maxCoresInUsePercents
-     * @return
+     * @param masterWord            master word
+     * @param stream                String stream of words
+     * @param maxCoresInUsePercents Percentage of all cores should be used. If counted core amount is less than 1, 1 core will be used, if counted core amount is more than max cores, all cores will be used
+     * @return list of unique words which can be constructed from master word
      */
     @Deprecated
     public List<String> executeUsingCoresInPercents(final String masterWord, final Stream<String> stream, final int maxCoresInUsePercents) {
@@ -128,14 +136,14 @@ public class WordGenerator {
     /**
      * Base method
      *
-     * @param masterWord
-     * @param fileName              - used for creating a stream if provided
-     * @param list                  - used for creating a stream if provided
-     * @param stream                - used as a stream
-     * @param useAllCores           - deprecated
-     * @param maxCoresInUse         - deprecated
-     * @param maxCoresInUsePercents - deprecated
-     * @return
+     * @param masterWord            master word
+     * @param fileName              used for creating a stream if provided
+     * @param list                  used for creating a stream if provided
+     * @param stream                used as a stream
+     * @param useAllCores           deprecated
+     * @param maxCoresInUse         deprecated
+     * @param maxCoresInUsePercents deprecated
+     * @return - list of unique words which can be constructed from master word
      */
     private List<String> execute(final String masterWord, final String fileName, final List<String> list,
                                  final Stream<String> stream, final boolean useAllCores, final int maxCoresInUse,
@@ -186,6 +194,14 @@ public class WordGenerator {
         }
     }
 
+    /**
+     * Single thread mode
+     *
+     * @param streamer    String stream of words
+     * @param wordChecker WordCheckerSet3Impl or WordCheckerArray2Impl depends of Master Word lenght
+     * @return list of words, which can be constructed by Master Word characters. Each word appears only once
+     * @throws IOException
+     */
     private List<String> executeInSingleThread(final WordGeneratorStreamer streamer, final WordChecker wordChecker) throws IOException {
         Set<String> resultSet = new HashSet<>();
 
@@ -195,6 +211,14 @@ public class WordGenerator {
         return convertResult(resultSet);
     }
 
+    /**
+     * @param streamer    String stream of words
+     * @param wordChecker WordCheckerSet3Impl or WordCheckerArray2Impl depends of Master Word lenght
+     * @param coresInUse  how many processon cores will be used max
+     * @return list of words, which can be constructed by Master Word characters. Each word appears only once
+     * @throws InterruptedException
+     * @throws IOException
+     */
     private List<String> executeMCore(final WordGeneratorStreamer streamer, final WordChecker wordChecker, final int coresInUse) throws InterruptedException, IOException {
 
         WordCheckerStatHelper wordCheckerStatHelper = getCurrentSettings();
@@ -202,7 +226,9 @@ public class WordGenerator {
         AtomicInteger taskRun = new AtomicInteger(0);
         List<String> list = new LinkedList<>();
         AtomicInteger delay = new AtomicInteger(10);
-        Set<String> resultSet = new HashSet<>();
+//        Set<String> resultSet = new HashSet<>();
+        AtomicInteger counter = new AtomicInteger(0);
+        List<Set<String>> result = new ArrayList<>();
 
         long startTime = System.nanoTime();
 
@@ -221,6 +247,7 @@ public class WordGenerator {
             list.add(currentWord);
 
             if (wordCheckerStatHelper.getChunk() == list.size()) {
+                counter.addAndGet(list.size());
                 taskRun.incrementAndGet();
                 if (wordCheckerStatHelper.getMaxCoreInUse() < taskRun.intValue()) {
                     synchronized (wordCheckerStatHelper) {
@@ -234,7 +261,8 @@ public class WordGenerator {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        resultSet.addAll(wordChecker.checkWords(currentWords));
+                        Set<String> resultSet = wordChecker.checkWords(currentWords);
+                        result.add(resultSet);
                         taskRun.decrementAndGet();
                     }
                 };
@@ -243,15 +271,14 @@ public class WordGenerator {
             }
         });
 
-        synchronized (wordCheckerStatHelper) {
-            wordCheckerStatHelper.setElapsedTime(System.nanoTime() - startTime);
-        }
-
         if (list.size() > 0) {
-            resultSet.addAll(wordChecker.checkWords(list));
+            Set<String> resultSet = wordChecker.checkWords(list);
+            result.add(resultSet);
+            counter.addAndGet(list.size());
         }
 
         while (taskRun.intValue() > 0) {
+            // All threads should be done, if no we should wait
             try {
                 Thread.sleep(0, wordCheckerStatHelper.getDelay());
             } catch (InterruptedException e) {
@@ -259,9 +286,27 @@ public class WordGenerator {
             }
         }
 
-        return convertResult(resultSet);
+        synchronized (wordCheckerStatHelper) {
+            wordCheckerStatHelper.setElapsedTimePerWord((System.nanoTime() - startTime) / counter.intValue());
+            wordCheckerStatHelper.setElapsedTime((System.nanoTime() - startTime) / 1000000);
+        }
+
+        Set<String> resultSetAll = new HashSet<>();
+        result.forEach(v -> {
+            if(v != null && v.size() > 0) {
+                resultSetAll.addAll(v);
+            }
+        });
+
+        return convertResult(resultSetAll);
     }
 
+    /**
+     * Convert result into a String list, filter NULL value
+     *
+     * @param set unique set of found words
+     * @return unisue list of words
+     */
     private List<String> convertResult(final Set<String> set) {
 
         try {
@@ -289,9 +334,9 @@ public class WordGenerator {
     }
 
     /**
-     * Get settings for the next run
+     * Get settings for the next run in multithreading mode
      *
-     * @return
+     * @return current calculated setting or the best if it was already calculated
      */
     private synchronized WordCheckerStatHelper getCurrentSettings() {
 
@@ -321,8 +366,8 @@ public class WordGenerator {
                 return helperPrevious;
             }
 
-            long diff = helper.getElapsedTime() - helperPrevious.getElapsedTime();
-            long percentDiff = 100 * diff / helperPrevious.getElapsedTime();
+            long diff = helper.getElapsedTimePerWord() - helperPrevious.getElapsedTimePerWord();
+            long percentDiff = 100 * diff / helperPrevious.getElapsedTimePerWord();
 
             if (Math.abs(percentDiff) < ATTEMPT_THRESHOLD_PERCENT) {
                 // difference of elapsed time in % less then threshold, does not make sence to do anything
@@ -382,7 +427,7 @@ public class WordGenerator {
     /**
      * Get stat info for multicore mode
      *
-     * @return
+     * @return list of attempts generated so far
      */
     public LinkedList<WordCheckerStatHelper> getAttempts() {
         return attempts;
@@ -390,15 +435,12 @@ public class WordGenerator {
 
     public static void main(String[] args) {
 
-        String fileName1 = "/usr/dict/words";
-        String fileName2 = "/usr/share/dict/words";
-
-        if (args.length != 1 && args.length != 2) {
+        if (args.length < 1 || args.length > 2) {
 
             System.err.println("Wrong argument list!");
             System.out.println("Expected arguments:");
             System.out.println("<string> - master word");
-            System.out.println(String.format("<string> - dictionary file name. Optional. If not provided '%s' will be used, if it does not exist '%s' will be used", fileName1, fileName2));
+            System.out.println("<string> - dictionary file name. Optional. If not provided standard input will be used.");
 
             return;
         }
@@ -409,18 +451,38 @@ public class WordGenerator {
 
         if (args.length == 2) {
             result = wordGenerator.execute(args[0], args[1]);
-        } else if ((new File(fileName1)).exists()) {
-            result = wordGenerator.execute(args[0], fileName1);
-        } else if ((new File(fileName2).exists())) {
-            result = wordGenerator.execute(args[0], fileName2);
-        } else {
-            System.err.println(String.format("Dictionary is not found, both files '%s' and '%s' do not exist", fileName1, fileName2));
-            return;
+        } else if (args.length == 1) {
+
+            System.out.println();
+            System.out.println("Masterword: " + args[0]);
+
+            System.out.println("Input words separated by CR. End of list - Ctrl-D, Ctrl-Z, Command-D depends of OS");
+
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.indexOf("win") >= 0) {
+                System.out.println("For Windoes use Ctrl-Z");
+            } else if (os.indexOf("mac") >= 0) {
+                System.out.println("For OS X use Command-D");
+            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
+                System.out.println("For Linux X use Ctrl-D");
+            }
+
+            Scanner scanner = new Scanner(System.in);
+
+            List<String> words = new ArrayList<>();
+
+            while (scanner.hasNext()) {
+                String next = scanner.next().trim();
+                words.add(next.trim());
+            }
+            scanner.close();
+
+            result = wordGenerator.execute(args[0], words);
         }
 
-        if(result == null){
+        if (result == null) {
             System.out.println("Nothing match.");
-        } else{
+        } else {
             System.out.println("Words found:");
             result.forEach(System.out::println);
         }

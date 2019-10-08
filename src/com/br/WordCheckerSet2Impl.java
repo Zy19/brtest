@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+/**
+ * Use {@link com.br.WordCheckerSet3Impl} instead
+ */
 @Deprecated
 class WordCheckerSet2Impl implements WordChecker {
 
@@ -25,7 +28,9 @@ class WordCheckerSet2Impl implements WordChecker {
 
             if(charMin > current){
                 charMin = current;
-            } else if(charMax < current){
+            }
+
+            if(charMax < current){
                 charMax = current;
             }
         }

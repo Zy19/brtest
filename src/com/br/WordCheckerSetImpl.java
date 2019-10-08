@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+/**
+ * Use {@link com.br.WordCheckerSet3Impl} instead
+ */
 @Deprecated
 class WordCheckerSetImpl implements WordChecker {
 

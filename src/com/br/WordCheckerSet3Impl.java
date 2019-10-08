@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Map based implementstion of WordChecker
+ * Map based implementstion of {@link com.br.WordChecker}
  */
 class WordCheckerSet3Impl implements WordChecker {
 

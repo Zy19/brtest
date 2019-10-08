@@ -1,7 +1,7 @@
 package com.br;
 
 /**
- * Array based implementstion of WordChecker
+ * Array based implementation of {@link com.br.WordChecker}
  */
 class WordCheckerArray2Impl implements WordChecker {
 

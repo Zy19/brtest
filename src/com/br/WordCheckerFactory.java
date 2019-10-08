@@ -2,8 +2,8 @@ package com.br;
 
 /**
  * Create and return WordChecker based on master word.
- * If difference between characters in master word is less then 1300 Array Implementattion is used.
- * If more Set Implementation is used
+ * If difference between characters in master word is less then 1300 Array Implementattion is used({@link com.br.WordCheckerArray2Impl}).
+ * If more Set Implementation is used({@link com.br.WordCheckerSet3Impl})
  */
 class WordCheckerFactory {
 
@@ -21,7 +21,10 @@ class WordCheckerFactory {
 
             if(charMin > current){
                 charMin = current;
-            } else if(charMax < current){
+            }
+
+            // cannot use else because master word can be of 1 char
+            if(charMax < current){
                 charMax = current;
             }
         }
